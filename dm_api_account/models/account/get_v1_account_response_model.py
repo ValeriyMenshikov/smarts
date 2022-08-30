@@ -1,5 +1,5 @@
 from jsonmodels.models import Base
-from jsonmodels.fields import StringField, IntField, FloatField, EmbeddedField, ListField, BoolField, DateField
+from jsonmodels.fields import StringField, IntField, EmbeddedField, ListField, BoolField, DateField
 
 
 class PagingSettings(Base):
@@ -11,14 +11,14 @@ class PagingSettings(Base):
 
 
 class UserSettings(Base):
-    color_schema = StringField(name='colorSchema')  # asd
+    color_schema = StringField(name='colorSchema')  # TODO сделать валидатор для списка доступных тем [ Modern, Pale, Classic, ClassicPale, Night ]
     nanny_greetings_message = StringField(name='nannyGreetingsMessage')
     paging = EmbeddedField(PagingSettings)
 
 
 class InfoDbText(Base):
     value = StringField()
-    parse_mode = StringField(name='parseMode')  # asd
+    parse_mode = StringField(name='parseMode')  # TODO сделать валидатор для списка доступных режимов [ Common, Info, Post, Chat ]
 
 
 class Rating(Base):
@@ -29,7 +29,7 @@ class Rating(Base):
 
 class UserDetails(Base):
     login = StringField()
-    roles = ListField()
+    roles = ListField(str)  # TODO сделать валидатор для списка доступных ролей [ Guest, Player, Administrator, NannyModerator, RegularModerator, SeniorModerator ]
     medium_picture_url = StringField(name='mediumPictureUrl')
     small_picture_url = StringField(name='smallPictureUrl')
     status = StringField()
@@ -41,7 +41,7 @@ class UserDetails(Base):
     icq = StringField()
     skype = StringField()
     original_picture_url = StringField(name='originalPictureUrl')
-    info = EmbeddedField(InfoDbText)
+    info = EmbeddedField([InfoDbText, str])
     settings = EmbeddedField(UserSettings)
 
 
