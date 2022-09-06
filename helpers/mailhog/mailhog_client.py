@@ -1,5 +1,6 @@
 import json
 import pprint
+import re
 
 import requests
 
@@ -22,4 +23,14 @@ class MailHogClient:
     def get_token_from_last_email(self):
         emails = self.get_all_email(limit=1)
         token = json.loads(emails.json()['items'][0]['Content']['Body'])['ConfirmationLinkUrl'].split('/')[-1]
+        return token
+
+    def get_token(self, user, token_type):
+        response = self.get_all_email()
+        token = None
+        for email in response.json()['items']:
+            content = json.loads(email['Content']['Body'])
+            if re.findall(f'ConfirmationLinkUrl.*{token_type}', str(content)):
+                if content['Login'] == user:
+                    token = content['ConfirmationLinkUrl'].split('/')[-1]
         return token
