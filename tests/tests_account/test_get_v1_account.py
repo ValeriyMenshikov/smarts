@@ -16,4 +16,3 @@ def test_get_v1_account():
     response = account.get_v1_account(
         x_dm_auth_token=token
     )
-    print(response)

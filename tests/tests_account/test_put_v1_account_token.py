@@ -1,4 +1,4 @@
-from dm_api_account.apis.account import AccountApi
+from dm_api_account.apis.account.account_api import AccountApi
 from helpers.mailhog.mailhog_client import MailHogClient
 
 
