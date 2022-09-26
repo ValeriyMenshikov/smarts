@@ -1,3 +1,5 @@
 requests
 pytest
 jsonmodels
+vyper-config
+pyhamcrest

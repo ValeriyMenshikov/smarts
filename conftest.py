@@ -1,25 +1,48 @@
 import pytest
 import structlog
-from dm_api_account.apis import AccountApi, LoginApi
 from helpers.mailhog.mailhog_client import MailHogClient
+from service.dm_api_account import DmApiAccount
+from vyper import v
+from pathlib import Path
 
-structlog.configure(
-    processors=[
-        structlog.processors.JSONRenderer(indent=4, sort_keys=True, ensure_ascii=False),
-    ]
+options_list = (
+    'service.dm_api_account',
+    'mailhog.host',
 )
 
 
-@pytest.fixture
-def account_api():
-    return AccountApi(host='http://localhost:5051')
+def set_config(request):
+    config = Path(__file__).parent.joinpath('config')
+    config_name = request.config.getoption('--env')
+    v.set_config_name(config_name)
+    v.add_config_path(config)
+    v.read_in_config()
+    for option in options_list:
+        v.set(option, request.config.getoption(f'--{option}'))
+
+    structlog.configure(
+        processors=[
+            structlog.processors.JSONRenderer(indent=4, sort_keys=True, ensure_ascii=False),
+        ]
+    )
+
+
+def pytest_addoption(parser):
+    parser.addoption('--env', action='store', default='stg')
+    for option in options_list:
+        parser.addoption(f'--{option}', action='store', default=None)
+
+
+@pytest.fixture(autouse=True)
+def config(request):
+    set_config(request)
 
 
 @pytest.fixture
-def login_api():
-    return LoginApi(host='http://localhost:5051')
+def dm_api_account():
+    return DmApiAccount(host=v.get('service.dm_api_account'))
 
 
 @pytest.fixture
 def mailhog():
-    return MailHogClient(host='http://localhost:5025')
+    return MailHogClient(host='mailhog.host')
