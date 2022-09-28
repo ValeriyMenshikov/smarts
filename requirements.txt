@@ -3,3 +3,5 @@ pytest
 jsonmodels
 vyper-config
 pyhamcrest
+records
+psycopg2
