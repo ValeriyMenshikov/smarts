@@ -1,7 +1,23 @@
 import json
 import re
-import requests
+import time
 from restclient.restclient import RestClient
+
+
+def retrier(attempts=10):
+    def get_function(fn):
+        def get_args(*args, **kwargs):
+            for attempt in range(1, attempts + 1):
+                response = fn(*args, **kwargs)
+                print(f'Попытка выполнить запрос {attempt}')
+                time.sleep(2)
+                if response.status_code == 200:
+                    return response
+            raise AssertionError(f"Не удалось выполнить запрос, в течении {attempts} попыток")
+
+        return get_args
+
+    return get_function
 
 
 class MailHogClient:
@@ -12,6 +28,7 @@ class MailHogClient:
         if headers:
             self.client.headers = self.headers
 
+    @retrier(10)
     def get_all_email(self, limit=50):
         params = {
             'limit': str(limit),
@@ -21,6 +38,15 @@ class MailHogClient:
             params=params
         )
         return response
+
+    def get_email_by_user_name(self, user_name):
+        emails = [_ for _ in self.get_all_email().json()['items'] if user_name in str(_)]
+        return emails
+
+    def get_token_from_email(self, email):
+        print(email)
+        token = json.loads(email['Content']['Body'])['ConfirmationLinkUrl'].split('/')[-1]
+        return token
 
     def get_token_from_last_email(self):
         emails = self.get_all_email(limit=1)
@@ -44,6 +70,7 @@ class MailHogClient:
         return response
 
     def delete_all_emails(self):
+        # emails_ids = [_['ID'] for _ in retrier(10)(self.get_all_email)().json()['items']]
         emails_ids = [_['ID'] for _ in self.get_all_email().json()['items']]
         for email_id in emails_ids:
             self.delete_email_by_id(email_id=email_id)

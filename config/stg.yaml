@@ -1,9 +1,12 @@
 service:
   dm_api_account: http://localhost:5051
 
-
 mailhog:
   host: http://localhost:5025
+
+test_user:
+  user_name: test_user_4
+  user_password: test_user_4
 
 database:
   postgresql:
