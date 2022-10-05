@@ -1,8 +1,10 @@
 service:
-  dm_api_account: http://localhost:5051
+#  dm_api_account: http://localhost:5051
+  dm_api_account: http://dm-api:5051
 
 mailhog:
-  host: http://localhost:5025
+#  host: http://localhost:5025
+  host: http://dm-mailhog:5025
 
 test_user:
   user_name: test_user_4
@@ -10,7 +12,8 @@ test_user:
 
 database:
   postgresql:
-    host: localhost
+#    host: localhost
+    host: dm-pg
     dbname: dm3.5
     user: postgres
     password: admin

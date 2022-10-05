@@ -4,5 +4,7 @@ jsonmodels
 vyper-config
 pyhamcrest
 records
-psycopg2
+psycopg2-binary
 jsondiff
+structlog
+allure-pytest
